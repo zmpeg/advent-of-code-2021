@@ -1,41 +1,13 @@
 #!/usr/bin/env ruby
 
-$fishes = []
-
-class Fish
-  def initialize(timer)
-    @timer = timer
+$fishes = File.read('input.txt').split(",")
+  .reduce(Array.new(9).fill(0)) do |s, f|
+    s[f.to_i] += 1
+    s
   end
 
-  def timer
-    @timer
-  end
-
-  def to_s
-    "#<Fish#{object_id} @timer=#{@timer}>"
-  end
-
-  def age
-    if @timer == 0
-      @timer = 7
-      $fishes.push Fish.new(9)
-    end
-    @timer -= 1
-  end
-end
-
-class String
-  def to_fish
-    return Fish.new self.to_i
-  end
-end
-
-$fishes = File.read('input.txt')
-  .split(",")
-  .map(&:to_fish)
-
-puts "Initial state: #{$fishes.map(&:timer).join(',')}"
-(1..80).each do |day|
-  $fishes.each{|f| f.age}
-  puts "After #{'%3.3s' % day.to_s} day: #{$fishes.map(&:timer).size}"
+(1..256).each do |day|
+  $fishes.push($fishes.shift)
+  $fishes[6] += $fishes[8]
+  puts "After #{'%3.3s' % day.to_s} day: #{$fishes.inject(:+)}"
 end
